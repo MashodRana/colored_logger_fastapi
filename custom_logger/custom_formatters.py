@@ -60,4 +60,27 @@ class ConsoleFormatter(logging.Formatter):
         if self.usesTime():
             record.asctime = self.formatTime(record, self.datefmt)
 
-        return f"{colored_text} | {record.asctime} | message: {record.getMessage()}"
+        return f"{icon} {colored_text} | {record.asctime} | message: {record.getMessage()}"
+
+
+class FileFormatter(logging.Formatter):
+
+    LEVEL_ICONS = {
+        'SUCCESS': '✅',
+        'DEBUG': '🐛',
+        'INFO': 'ℹ️',
+        'WARNING': '⚠️',
+        'ERROR': '❌',
+        'CRITICAL': '🔥',
+    }
+    MAX_LEVEL_LEN = max(len(level) for level in LEVEL_ICONS.keys()) + 1
+
+    def format(self, record: logging.LogRecord) -> str:
+        icon = self.LEVEL_ICONS.get(record.levelname, "ℹ️")
+        level_name = f"{record.levelname}:"
+        padded_level_name = f"{level_name:<{self.MAX_LEVEL_LEN}}"
+
+        if self.usesTime():
+            record.asctime = self.formatTime(record, self.datefmt)
+
+        return f"{icon} {padded_level_name} | {record.asctime} | message: {record.getMessage()}"
