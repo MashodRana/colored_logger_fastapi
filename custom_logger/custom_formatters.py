@@ -99,7 +99,15 @@ class ConsoleFormatter(logging.Formatter):
         if self.usesTime():
             record.asctime = self.formatTime(record, self.datefmt)
 
-        return f"{icon_colored_level} {record.asctime} | message: {record.getMessage()}"
+            # Optionally get classname (if provided via extra)
+            classname = getattr(record, "classname", "")
+
+            # Build final log string with filename, method, line no
+            return (
+                f"{icon_colored_level} {record.asctime} | "
+                f"{record.filename}:{record.lineno} | {classname}{record.funcName}() | "
+                f"message: {record.getMessage()}"
+            )
 
 
 class FileFormatter(logging.Formatter):
@@ -116,4 +124,10 @@ class FileFormatter(logging.Formatter):
         if self.usesTime():
             record.asctime = self.formatTime(record, self.datefmt)
 
-        return f"{level_name} {record.asctime} | message: {record.getMessage()}"
+        class_name = getattr(record, "class_name", "")
+
+        return (
+            f"{level_name} {record.asctime} | "
+            f"{record.filename}:{record.lineno} | {class_name}{record.funcName}() | "
+            f"message: {record.getMessage()}"
+        )
