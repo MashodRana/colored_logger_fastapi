@@ -28,7 +28,7 @@ class Color:
         # return (self.PREFIX + '%dm%s' + self.SUFFIX) % (color, text)
 
 
-class ColorFormatter(logging.Formatter):
+class ConsoleFormatter(logging.Formatter):
     MAPPED_LEVEL = {
         'INFO': 'blue',
         'WARNING': 'yellow',
@@ -38,9 +38,19 @@ class ColorFormatter(logging.Formatter):
         'SUCCESS': 'green'
     }
 
+    LEVEL_ICONS = {
+        'SUCCESS': '✅',
+        'DEBUG': '🐛',
+        'INFO': 'ℹ️',
+        'WARNING': '⚠️',
+        'ERROR': '❌',
+        'CRITICAL': '🔥',
+    }
+
     MAX_LEVEL_LEN = max(len(level) for level in MAPPED_LEVEL.keys()) + 1
 
     def format(self, record: logging.LogRecord) -> str:
+        icon = self.LEVEL_ICONS[record.levelname]
         color: str = self.MAPPED_LEVEL.get(record.levelname, 'white')
         # Align levelname to max length
         level_name = f"{record.levelname}:"
