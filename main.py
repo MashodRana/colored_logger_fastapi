@@ -1,20 +1,24 @@
-import logging
-
 import uvicorn
 from fastapi import FastAPI
 
-from custom_logger.logger import logger
+from custom_logger.logger import CustomLogger
+from core.config import get_settings
+
+settings = get_settings()
+CustomLogger(
+    log_file_name=settings.log_file_name,
+    log_file_dir=settings.LOG_FILE_DIR,
+    log_level=settings.log_level,
+    file_size_max_mb=settings.LOG_MAX_FILE_SIZE,
+    file_backup_count=settings.LOG_FILE_BACKUP_COUNT
+)
+
+logger = CustomLogger.get_logger(__name__)
 
 
 app = FastAPI()
 
 logger.info("Before Application Startup")
-
-# Adding Custom Level: success level
-logging.SUCCESS = 25  # between WARNING and INFO
-logging.addLevelName(logging.SUCCESS, 'SUCCESS')
-setattr(logger, 'success', lambda message, *args: logger._log(logging.SUCCESS, message, args))
-
 logger.success('success')
 logger.debug('debug')
 logger.warning('warning')
