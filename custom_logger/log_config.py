@@ -1,24 +1,24 @@
-import logging
-
 from core.config import get_settings
 from custom_logger.custom_formatters import ConsoleFormatter, FileFormatter
+
+
+settings = get_settings()
 
 # Console handler with color
 console_handler = {
     "class": "logging.StreamHandler",
-    "formatter": "colored",
-    # "stream": "ext://sys.stdout",
-    "level": "DEBUG"
+    "formatter": "console_formatter",
+    "level": settings.log_level
 }
 
 # File handler
 file_handler = {
     "class": "logging.handlers.RotatingFileHandler",
     "formatter": "file_formatter",
-    "filename": "app.log",
-    "maxBytes": 5 * 1024 * 1024,
-    "backupCount": 3,
-    "level": "INFO",
+    "filename": settings.log_file_name,
+    "maxBytes": settings.LOG_MAX_FILE_SIZE * 1024 * 1024,
+    "backupCount": settings.LOG_FILE_BACKUP_COUNT,
+    "level": settings.log_level,
     "encoding": "utf-8"
 }
 
@@ -29,7 +29,7 @@ LOG_CONFIG = {
             "standard": {
                 "format": "%(asctime)s | %(name)s | %(filename)s | %(classname)s | %(funcName)s | line:%(lineno)d | %(message)s"
             },
-            "colored": {
+            "console_formatter": {
                 "()": ConsoleFormatter,
                 "format": "%(asctime)s | %(name)s | %(filename)s | %(classname)s | %(funcName)s | line:%(lineno)d | %(message)s"
             },
