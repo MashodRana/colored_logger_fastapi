@@ -1,25 +1,18 @@
 import uvicorn
 from fastapi import FastAPI
-
+import logging
 from custom_logger.logger import CustomLogger
 from core.config import get_settings
+from custom_logger.log_config import LOG_CONFIG
 
 settings = get_settings()
-CustomLogger(
-    log_file_name=settings.log_file_name,
-    log_file_dir=settings.LOG_FILE_DIR,
-    log_level=settings.log_level,
-    file_size_max_mb=settings.LOG_MAX_FILE_SIZE,
-    file_backup_count=settings.LOG_FILE_BACKUP_COUNT
-)
-
-logger = CustomLogger.get_logger(__name__)
-
+logging.config.dictConfig(LOG_CONFIG)
 
 app = FastAPI()
+logger = logging.getLogger("my_fastapi_logger")
 
 logger.info("Before Application Startup")
-logger.success('success')
+# logger.success('success')
 logger.debug('debug')
 logger.warning('warning')
 logger.error('error')
@@ -31,5 +24,5 @@ def root():
     return {"Hello World"}
 
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=80)
+# if __name__ == "__main__":
+#     uvicorn.run(app, host="0.0.0.0", port=80)
