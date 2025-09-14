@@ -94,20 +94,14 @@ class ConsoleFormatter(logging.Formatter):
             ConsoleFormatter.__icon_colored_levels = LogLevelFormatter.get_colored_levels_with_icon()
         return ConsoleFormatter.__icon_colored_levels
 
-    def format(self, record: logging.LogRecord) -> str:
+    def format(self, record):
+        # Add class name dynamically if available
+        if not hasattr(record, "classname"):
+            record.classname = record.__dict__.get("classname", getattr(record, "clsname", "-"))
+
+        log_message = super().format(record)
         icon_colored_level = self.icon_colored_levels.get(record.levelname)
-        if self.usesTime():
-            record.asctime = self.formatTime(record, self.datefmt)
-
-            # Optionally get classname (if provided via extra)
-            classname = getattr(record, "classname", "")
-
-            # Build final log string with filename, method, line no
-            return (
-                f"{icon_colored_level} {record.asctime} | "
-                f"{record.filename}:{record.lineno} | {classname}{record.funcName}() | "
-                f"message: {record.getMessage()}"
-            )
+        return f"{icon_colored_level}{log_message}"
 
 
 class FileFormatter(logging.Formatter):
@@ -120,14 +114,11 @@ class FileFormatter(logging.Formatter):
         return FileFormatter.__icon_levels
 
     def format(self, record: logging.LogRecord) -> str:
+        # Add class name dynamically if available
+        if not hasattr(record, "classname"):
+            record.classname = record.__dict__.get("classname", getattr(record, "clsname", "-"))
+
+        log_message = super().format(record)
         level_name = self.levels_with_icon.get(record.levelname)
-        if self.usesTime():
-            record.asctime = self.formatTime(record, self.datefmt)
+        return f"{level_name}{log_message}"
 
-        class_name = getattr(record, "class_name", "")
-
-        return (
-            f"{level_name} {record.asctime} | "
-            f"{record.filename}:{record.lineno} | {class_name}{record.funcName}() | "
-            f"message: {record.getMessage()}"
-        )
